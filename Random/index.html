@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система генерації тексту</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Система генерації тексту</h1>
+        <form id="textGenerationForm">
+            <label for="topic">Введіть тему або ключові слова:</label>
+            <input type="text" id="topic" name="topic" required>
+            <label for="length">Довжина тексту:</label>
+            <input type="number" id="length" name="length" min="1" value="5" required>
+            <label for="style">Стиль письма:</label>
+            <select id="style" name="style">
+                <option value="formal">Офіційний</option>
+                <option value="casual">Неофіційний</option>
+            </select>
+            <label for="tone">Тон:</label>
+            <select id="tone" name="tone">
+                <option value="neutral">Неутральний</option>
+                <option value="friendly">Дружній</option>
+                <option value="professional">Професійний</option>
+            </select>
+            <button type="submit">Згенерувати текст</button>
+        </form>
+        <div id="generatedText"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
