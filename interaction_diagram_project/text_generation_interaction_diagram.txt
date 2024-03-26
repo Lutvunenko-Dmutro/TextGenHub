@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant U as User        # Користувач
+    participant T as Themes      # Мікросервіс тем
+    participant TG as TextGen    # Мікросервіс генерації тексту
+
+    U->>+T: Get Available Themes # Користувач отримує доступні теми (HTTP GET)
+    T-->>-U: Send Themes List    # Відправка списку тем користувачу (HTTP GET)
+    
+    U->>+TG: Generate Text       # Користувач вибирає тему та запитує генерацію тексту (HTTP POST)
+    TG-->>-U: Send Generated Text # Відправка згенерованого тексту користувачу (HTTP POST)
