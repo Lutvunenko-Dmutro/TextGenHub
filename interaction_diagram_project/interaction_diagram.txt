@@ -1,0 +1,18 @@
+@startuml
+    participant U as User        # Користувач
+    participant A as Auth        # Модуль авторизації
+    participant S as Subscriptions # Модуль підписок
+
+    U->>+A: Register User        # Користувач реєструється
+    A-->>-U: Confirm Registration # Підтвердження реєстрації
+    U->>+A: Enter Credentials    # Користувач вводить дані для авторизації
+    A-->>-U: Validate Credentials # Перевірка авторизаційних даних
+    alt Credentials Valid
+        U->>+S: Choose Topic     # Користувач вибирає тему
+        S->>+A: Validate User Session # Перевірка сесії
+        A-->>-S: Session Valid   # Сесія валідна
+        S-->>-U: Confirm Subscription # Підтвердження підписки
+    else Credentials Invalid
+        A-->>U: Error: Invalid Credentials # Помилка авторизації
+    end
+@enduml
