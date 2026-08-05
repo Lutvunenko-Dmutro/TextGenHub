@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI TextGenHub | Інтелектуальна Генерація</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <h1>TextGen<span>Hub</span></h1>
+            </div>
+            <p class="subtitle">Ваш персональний AI для генерації контенту</p>
+        </header>
+
+        <section class="glass-card">
+            <form id="textGenerationForm">
+                <div class="form-group">
+                    <label for="topic"><i class="fa-solid fa-message"></i> Тема або ключові слова</label>
+                    <input type="text" id="topic" name="topic" placeholder="Наприклад: Технології майбутнього..." required autocomplete="off">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="length"><i class="fa-solid fa-ruler"></i> Кількість речень</label>
+                        <input type="number" id="length" name="length" min="1" max="20" value="5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="style"><i class="fa-solid fa-pen-nib"></i> Стиль</label>
+                        <div class="select-wrapper">
+                            <select id="style" name="style">
+                                <option value="formal">Офіційний</option>
+                                <option value="casual">Неофіційний</option>
+                                <option value="creative">Креативний</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tone"><i class="fa-solid fa-face-smile"></i> Тон</label>
+                        <div class="select-wrapper">
+                            <select id="tone" name="tone">
+                                <option value="neutral">Нейтральний</option>
+                                <option value="friendly">Дружній</option>
+                                <option value="professional">Професійний</option>
+                                <option value="humorous">З гумором</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-btn" id="generateBtn">
+                    <span>Згенерувати текст</span>
+                    <i class="fa-solid fa-bolt"></i>
+                </button>
+            </form>
+        </section>
+
+        <section class="result-section" id="resultSection" style="display: none;">
+            <div class="glass-card result-card">
+                <div class="result-header">
+                    <h3><i class="fa-solid fa-robot"></i> AI Результат</h3>
+                    <button id="copyBtn" class="copy-btn" title="Копіювати текст">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+                
+                <div class="loader-container" id="loader">
+                    <div class="spinner"></div>
+                    <p id="loaderText">Аналізую запит...</p>
+                </div>
+
+                <div class="generated-content" id="generatedText"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
