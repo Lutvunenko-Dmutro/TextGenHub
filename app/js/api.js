@@ -16,7 +16,15 @@ export async function fetchRAGContext(topic, signal) {
 
 export async function checkServerStatus(statusDiv, statusText, generateButton) {
     try {
-        const res = await fetch("http://localhost:11434/", { method: "GET" });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500); // 1.5s timeout
+
+        const res = await fetch("http://localhost:11434/", { 
+            method: "GET",
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (res.ok) {
             statusDiv.className = "server-status online";
             statusText.textContent = "Ollama Online";

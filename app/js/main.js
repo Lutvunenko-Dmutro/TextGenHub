@@ -20,8 +20,18 @@ window.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('statusText');
     const generateBtn = document.getElementById('generateBtn');
 
-    checkServerStatus(statusDiv, statusText, generateBtn);
-    setInterval(() => checkServerStatus(statusDiv, statusText, generateBtn), 3000);
+    const checkAndUpdateStatus = async () => {
+        const provider = document.getElementById('provider').value;
+        if (provider === "webgpu") {
+            statusDiv.className = "server-status online";
+            statusText.textContent = "WebGPU (Локально)";
+        } else {
+            await checkServerStatus(statusDiv, statusText, generateBtn);
+        }
+    };
+
+    checkAndUpdateStatus();
+    setInterval(checkAndUpdateStatus, 3000);
 });
 
 // Auto-save settings
