@@ -9,10 +9,10 @@ echo.
 echo Для використання "Вбудованого в браузер ШІ" (WebGPU)
 echo проект має бути запущений через локальний сервер.
 echo.
-echo Запускаю Python HTTP Server на порту 8000...
+echo Запускаю Python HTTP Server на порту 8080...
 echo.
 
-start "" "http://localhost:8000/app/index.html"
+start "" "http://localhost:8080/app/index.html"
 python server.py
 
 pause

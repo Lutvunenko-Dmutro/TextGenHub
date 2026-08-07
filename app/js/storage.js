@@ -10,8 +10,19 @@ export function loadSettings() {
     if (savedTone) document.getElementById('tone').value = savedTone;
     if (savedRAG !== null) document.getElementById('useSearch').checked = savedRAG === 'true';
     if (savedWebgpuModel) {
-        const select = document.getElementById('webgpuModel');
-        if (select) select.value = savedWebgpuModel;
+        const hiddenInput = document.getElementById('webgpuModel');
+        if (hiddenInput) {
+            hiddenInput.value = savedWebgpuModel;
+            // Also sync the visible custom-select span
+            const customSelect = document.querySelector('.custom-select[data-id="webgpuModel"]');
+            if (customSelect) {
+                const matchingOpt = customSelect.querySelector(`.select-items div[data-value="${savedWebgpuModel}"]`);
+                if (matchingOpt) {
+                    const span = customSelect.querySelector('.select-selected span');
+                    if (span) span.textContent = matchingOpt.textContent;
+                }
+            }
+        }
     }
 }
 

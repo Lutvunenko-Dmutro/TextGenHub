@@ -19,8 +19,18 @@ export function showToast(message, type = 'error') {
 }
 
 export function showError(msg) {
-    const cleanMsg = msg.replace(/<[^>]*>?/gm, '');
-    showToast(cleanMsg, 'error');
+    // If it's plain text (no HTML) — use toast. If it has HTML — show in generatedText div directly.
+    const hasHTML = /<[a-z][\s\S]*>/i.test(msg);
+    if (hasHTML) {
+        const resultSection = document.getElementById('resultSection');
+        const generatedText = document.getElementById('generatedText');
+        if (resultSection && generatedText) {
+            resultSection.style.display = 'block';
+            generatedText.innerHTML = msg;
+            return;
+        }
+    }
+    showToast(msg, 'error');
 }
 
 export function updateCounters(text) {
