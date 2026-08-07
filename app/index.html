@@ -19,6 +19,36 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+    <!-- Global Error Logger for Debugging -->
+    <div id="debugLogger" style="display:none; position:fixed; top:0; left:0; right:0; z-index:9999; background:rgba(255,0,0,0.9); color:white; padding:20px; font-family:monospace; max-height:300px; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <h3 style="margin-top:0; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:10px;">🚨 Система виявила критичну помилку:</h3>
+        <pre id="debugLogContent" style="white-space:pre-wrap; margin:0;"></pre>
+        <button onclick="document.getElementById('debugLogger').style.display='none'" style="margin-top:10px; background:white; color:red; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;">Сховати</button>
+    </div>
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            const logger = document.getElementById('debugLogger');
+            const content = document.getElementById('debugLogContent');
+            logger.style.display = 'block';
+            content.innerHTML += `[${new Date().toLocaleTimeString()}] Помилка: ${message}\nФайл: ${source}:${lineno}:${colno}\n\n`;
+            if (error && error.stack) content.innerHTML += `Стек викликів:\n${error.stack}\n\n`;
+            content.innerHTML += '=======================================\n';
+            return false; // Дозволяємо помилці вивестись і в звичайну консоль
+        };
+        
+        // Також перехоплюємо неперехоплені проміси
+        window.addEventListener('unhandledrejection', function(event) {
+            const logger = document.getElementById('debugLogger');
+            const content = document.getElementById('debugLogContent');
+            logger.style.display = 'block';
+            content.innerHTML += `[${new Date().toLocaleTimeString()}] Unhandled Promise Rejection: ${event.reason}\n`;
+            if (event.reason && event.reason.stack) content.innerHTML += `Стек викликів:\n${event.reason.stack}\n\n`;
+            content.innerHTML += '=======================================\n';
+        });
+        
+        console.log("[DEBUG] Глобальний логер ініціалізовано. Чекаю на завантаження модулів...");
+    </script>
+
     <div class="background-effects">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
