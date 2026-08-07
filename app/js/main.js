@@ -1,5 +1,5 @@
 import { OLLAMA_URL, OLLAMA_MODEL, styleMap, toneMap, loadingPhrases } from './config.js';
-import { loadSettings, saveSettings, saveToHistory, renderHistory, clearHistory } from './storage.js';
+import { loadSettings, saveSettings, saveToHistory, getHistory, clearHistory } from './storage.js';
 import { showToast, showError, setUILocked, setupCustomSelects, setupModals, setupAdvancedToggle, setupCopyButton, updateCounters } from './ui.js';
 import { fetchRAGContext, checkServerStatus } from './api.js';
 import { generateWithWebGPU, generateWithOllama, unloadWebLLM } from './llm.js';
