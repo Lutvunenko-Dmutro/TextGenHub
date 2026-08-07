@@ -1,0 +1,2 @@
+# TextGenHub uses standard Python libraries.
+# No external dependencies are required.
