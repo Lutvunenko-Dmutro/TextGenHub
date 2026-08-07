@@ -6,7 +6,7 @@ import json
 import re
 import os
 
-PORT = int(os.environ.get("PORT", 8000))
+PORT = int(os.environ.get("PORT", 8080))
 
 class RAGRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -58,6 +58,13 @@ class RAGRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
         # Якщо це звичайний файл (index.html, script.js) - віддаємо його як звичайний сервер
         return super().do_GET()
+
+    def end_headers(self):
+        # Вимикаємо кешування браузером для зручної розробки
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.send_header('Pragma', 'no-cache')
+        self.send_header('Expires', '0')
+        super().end_headers()
 
 # Змінюємо робочу директорію на ту, де лежить скрипт, щоб файли роздавалися правильно
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
