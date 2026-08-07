@@ -1,8 +1,8 @@
-import { OLLAMA_URL, OLLAMA_MODEL, styleMap, toneMap, loadingPhrases } from './config.js?v=2';
-import { loadSettings, saveSettings, saveToHistory, getHistory, clearHistory } from './storage.js?v=2';
-import { showToast, showError, setUILocked, setupCustomSelects, setupModals, setupAdvancedToggle, setupCopyButton, updateCounters } from './ui.js?v=2';
+import { OLLAMA_URL, OLLAMA_MODEL, styleMap, toneMap, loadingPhrases } from './config.js';
+import { loadSettings, saveSettings, saveToHistory, clearHistory } from './storage.js';
+import { showToast, showError, setUILocked, setupCustomSelects, setupModals, setupAdvancedToggle, setupCopyButton, updateCounters } from './ui.js';
 import { fetchRAGContext, checkServerStatus } from './network.js';
-import { generateWithWebGPU, generateWithOllama, unloadWebLLM } from './llm.js?v=2';
+import { generateWithWebGPU, generateWithOllama, unloadWebLLM } from './llm.js';
 
 let currentAbortController = null;
 let loaderInterval;

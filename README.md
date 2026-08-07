@@ -62,6 +62,6 @@ python server.py
 - `/app/js/` — Модульна логіка:
   - `main.js` — Головний контролер.
   - `llm.js` — Відповідає за роботу WebGPU як Fallback.
-  - `api.js` — Взаємодія з Ollama API та RAG-сервером.
+  - `network.js` — Взаємодія з Ollama API та RAG-сервером.
   - `storage.js` — Збереження історії та налаштувань.
 - `server.py` — Python-сервер для роздачі сторінки та RAG.
