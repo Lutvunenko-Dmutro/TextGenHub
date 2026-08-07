@@ -211,6 +211,26 @@ form.addEventListener('submit', async (event) => {
             if (!signal.aborted) {
                 let cleanedText = finalText.replace(/(\.|\?|!)\s*(\1\s*){2,}/g, '$1');
                 cleanedText = cleanedText.replace(/(ти — інтелектуальна система|ти україномовний помічник|Приклад ідеальної відповіді)/ig, '');
+
+                // --- Repetition loop detector ---
+                const sentences = cleanedText.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 10);
+                if (sentences.length >= 3) {
+                    const counts = {};
+                    let loopStart = -1;
+                    for (let i = 0; i < sentences.length; i++) {
+                        const key = sentences[i].trim().toLowerCase().substring(0, 40);
+                        counts[key] = (counts[key] || 0) + 1;
+                        if (counts[key] >= 3 && loopStart === -1) {
+                            loopStart = i - 2;
+                        }
+                    }
+                    if (loopStart > 0) {
+                        cleanedText = sentences.slice(0, loopStart).join(' ');
+                        showToast('⚠️ Виявлено зациклення — текст обрізано автоматично', 'warning');
+                    }
+                }
+                // --- End repetition detector ---
+
                 target.innerHTML = DOMPurify.sanitize(marked.parse(cleanedText));
                 updateCounters(cleanedText);
                 saveToHistory(topic, cleanedText);
