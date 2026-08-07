@@ -9,6 +9,8 @@
 
 *Потужний локальний веб-застосунок для генерації тексту без цензури та лімітів за допомогою Ollama.*
 
+<img src="assets/screenshot.png" alt="TextGenHub Screenshot" style="border-radius:10px; max-width:100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top:20px; margin-bottom:20px;">
+
 </div>
 
 ## 📖 Про проєкт
