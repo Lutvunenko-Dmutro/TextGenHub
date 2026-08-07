@@ -7,7 +7,9 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 
-*Сучасний інтелектуальний веб-застосунок для генерації тексту прямо у вашому браузері за допомогою WebGPU.*
+*Веб-застосунок для інтелектуальної генерації тексту з використанням вбудованих у браузер моделей штучного інтелекту (WebGPU).*
+
+<img src="assets/screenshot.png" alt="TextGenHub Screenshot" style="border-radius:10px; max-width:100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top:20px; margin-bottom:20px;">
 
 </div>
 
