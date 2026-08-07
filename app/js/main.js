@@ -14,12 +14,12 @@ window.addEventListener('DOMContentLoaded', () => {
     setupModals();
     setupAdvancedToggle();
     setupCopyButton();
-    
+
     // Check server status
     const statusDiv = document.getElementById('serverStatus');
     const statusText = document.getElementById('statusText');
     const generateBtn = document.getElementById('generateBtn');
-    
+
     checkServerStatus(statusDiv, statusText, generateBtn);
     setInterval(() => checkServerStatus(statusDiv, statusText, generateBtn), 3000);
 });
@@ -120,7 +120,7 @@ form.addEventListener('submit', async (event) => {
     generateBtn.innerHTML = '<span>Зупинити 🛑</span>';
     generateBtn.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
     generateBtn.style.boxShadow = '0 8px 32px rgba(231, 76, 60, 0.4)';
-    
+
     resultSection.style.display = 'block';
     loader.style.display = 'flex';
     generatedTextDiv.innerHTML = '';
@@ -140,16 +140,17 @@ form.addEventListener('submit', async (event) => {
 2. Твій текст має складатися рівно з ${length} речень (ні більше, ні менше).
 3. Стиль написання: ${styleMap[style]}.
 4. Тон тексту: ${toneMap[tone]}.
-5. НЕ згадуй про ці правила у тексті. Просто напиши текст на задану тему.`;
+5. НЕ згадуй про ці правила у тексті. Просто напиши текст на задану тему.
+6. АНТИ-МАЯЧНЯ: Якщо тема беззмістовна, незрозуміла або це просто випадкові літери (наприклад "куку", "абаба"), НЕ вигадуй нісенітниць. Напиши лише одне речення: "Будь ласка, введіть більш зрозумілу тему для тексту." і зупинись.`;
 
     if (customPrompt) {
-        systemPrompt += `\n6. ДОДАТКОВЕ ПРАВИЛО: ${customPrompt}`;
+        systemPrompt += `\n7. ДОДАТКОВЕ ПРАВИЛО: ${customPrompt}`;
     }
     const userPrompt = `ТЕМА ДЛЯ ТЕКСТУ: "${topic}"\n\nНапиши текст ВИКЛЮЧНО на цю тему.`;
 
     try {
         progressText.style.display = 'block';
-        
+
         if (useSearch) {
             progressText.innerText = "Шукаю інформацію в інтернеті...";
             const context = await fetchRAGContext(topic, signal);
@@ -167,7 +168,7 @@ form.addEventListener('submit', async (event) => {
                 const ping = await fetch("http://localhost:11434/", { method: "GET", signal });
                 if (!ping.ok) throw new Error("Offline");
             } catch (e) {
-                if(e.name !== 'AbortError'){
+                if (e.name !== 'AbortError') {
                     showToast("Ollama недоступний. Автоматичний перехід на WebGPU!", "warning");
                     provider = "webgpu";
                     document.getElementById('provider').value = "webgpu";
@@ -214,15 +215,15 @@ form.addEventListener('submit', async (event) => {
     } catch (error) {
         clearInterval(loaderInterval);
         loader.style.display = 'none';
-        
+
         if (error.name === 'AbortError') {
             console.log("Generation aborted by user");
             return;
         }
         console.error("Generate Error:", error);
-        
+
         if (provider === "webgpu") {
-             showError(`<div style="text-align:left; background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3); padding: 15px; border-radius: 10px;">
+            showError(`<div style="text-align:left; background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3); padding: 15px; border-radius: 10px;">
                     <strong style="color:#ff6b6b; font-size:1.1rem;">❌ Помилка WebGPU</strong><br><br>
                     Можливо ваш браузер не підтримує WebGPU або не вистачає пам'яті. Деталі: ${error.message}
                 </div>`);
