@@ -8,10 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries for Safe Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- CSS Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <div class="background-effects">
@@ -20,19 +25,66 @@
     </div>
 
     <main class="container">
+        <!-- Toast Notification Container -->
+        <div id="toastContainer" class="toast-container"></div>
+
         <header class="app-header">
             <div class="logo">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <h1>TextGen<span>Hub</span></h1>
             </div>
+            <div class="header-actions">
+                <button id="historyBtn" class="icon-btn" title="Історія генерацій"><i class="fa-solid fa-clock-rotate-left"></i></button>
+                <div id="serverStatus" class="server-status checking">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Перевірка сервера...</span>
+                </div>
+            </div>
             <p class="subtitle">Ваш персональний AI для генерації контенту</p>
         </header>
 
+        <!-- History Modal (Hidden by default) -->
+        <div id="historyModal" class="modal">
+            <div class="modal-content glass-card">
+                <span class="close-modal">&times;</span>
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> Історія генерацій</h2>
+                <div id="historyList" class="history-list"></div>
+                <button id="clearHistoryBtn" class="secondary-btn" style="margin-top: 15px; width: 100%;"><i class="fa-solid fa-trash"></i> Очистити історію</button>
+            </div>
+        </div>
+
         <section class="glass-card">
             <form id="textGenerationForm">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label><i class="fa-solid fa-server"></i> Двигун ШІ</label>
+                        <div class="custom-select" data-id="provider">
+                            <div class="select-selected"><span>Ollama (Фоновий сервер)</span> <i class="fa-solid fa-chevron-down select-icon"></i></div>
+                            <div class="select-items select-hide">
+                                <div data-value="ollama">Ollama (Фоновий сервер)</div>
+                                <div data-value="webgpu">WebGPU (Вбудовано в браузер)</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="provider" name="provider" value="ollama">
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="topic"><i class="fa-solid fa-message"></i> Тема або ключові слова</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label for="topic"><i class="fa-solid fa-message"></i> Тема або ключові слова</label>
+                        <button type="button" id="clearAllBtn" class="icon-btn-small" title="Очистити все"><i class="fa-solid fa-broom"></i> Очистити</button>
+                    </div>
                     <input type="text" id="topic" name="topic" placeholder="Наприклад: Технології майбутнього..." required autocomplete="off">
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label class="toggle-container">
+                        <span class="toggle-label"><i class="fa-solid fa-globe"></i> Шукати свіжу інформацію в інтернеті перед генерацією (RAG)</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="useSearch" name="useSearch">
+                            <span class="slider"></span>
+                        </div>
+                    </label>
                 </div>
 
                 <div class="form-row">
@@ -42,28 +94,42 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="style"><i class="fa-solid fa-pen-nib"></i> Стиль</label>
-                        <div class="select-wrapper">
-                            <select id="style" name="style">
-                                <option value="formal">Офіційний</option>
-                                <option value="casual">Неофіційний</option>
-                                <option value="creative">Креативний</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down select-icon"></i>
+                        <label><i class="fa-solid fa-pen-nib"></i> Стиль</label>
+                        <div class="custom-select" data-id="style">
+                            <div class="select-selected"><span>Офіційний</span> <i class="fa-solid fa-chevron-down select-icon"></i></div>
+                            <div class="select-items select-hide">
+                                <div data-value="formal">Офіційний</div>
+                                <div data-value="casual">Неофіційний</div>
+                                <div data-value="creative">Креативний</div>
+                            </div>
                         </div>
+                        <input type="hidden" id="style" name="style" value="formal">
                     </div>
 
                     <div class="form-group">
-                        <label for="tone"><i class="fa-solid fa-face-smile"></i> Тон</label>
-                        <div class="select-wrapper">
-                            <select id="tone" name="tone">
-                                <option value="neutral">Нейтральний</option>
-                                <option value="friendly">Дружній</option>
-                                <option value="professional">Професійний</option>
-                                <option value="humorous">З гумором</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down select-icon"></i>
+                        <label><i class="fa-solid fa-face-smile"></i> Тон</label>
+                        <div class="custom-select" data-id="tone">
+                            <div class="select-selected"><span>Нейтральний</span> <i class="fa-solid fa-chevron-down select-icon"></i></div>
+                            <div class="select-items select-hide">
+                                <div data-value="neutral">Нейтральний</div>
+                                <div data-value="friendly">Дружній</div>
+                                <div data-value="professional">Професійний</div>
+                                <div data-value="humorous">З гумором</div>
+                            </div>
                         </div>
+                        <input type="hidden" id="tone" name="tone" value="neutral">
+                    </div>
+                </div>
+
+                <!-- Advanced Settings Toggle -->
+                <div class="advanced-settings-toggle" id="advancedToggle">
+                    <i class="fa-solid fa-gear"></i> Розширені налаштування <i class="fa-solid fa-chevron-down chevron"></i>
+                </div>
+                
+                <div class="advanced-settings-content" id="advancedContent" style="display: none;">
+                    <div class="form-group">
+                        <label for="customPrompt"><i class="fa-solid fa-code"></i> Додаткові інструкції (System Prompt)</label>
+                        <textarea id="customPrompt" rows="3" placeholder="Наприклад: Пиши у стилі Тараса Шевченка, використовуй багато метафор..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-family: inherit; resize: vertical;"></textarea>
                     </div>
                 </div>
 
@@ -86,13 +152,20 @@
                 <div class="loader-container" id="loader">
                     <div class="spinner"></div>
                     <p id="loaderText">Аналізую запит...</p>
+                    <p id="progressText" style="font-size: 0.8rem; color: #a5d6ff; margin-top: 5px;"></p>
                 </div>
 
                 <div class="generated-content" id="generatedText"></div>
+                
+                <div class="text-stats" id="textStats" style="display: none; justify-content: flex-end; gap: 15px; margin-top: 10px; font-size: 0.85rem; color: #a5d6ff; opacity: 0.8;">
+                    <span><i class="fa-solid fa-font"></i> Слів: <span id="wordCount">0</span></span>
+                    <span><i class="fa-solid fa-keyboard"></i> Символів: <span id="charCount">0</span></span>
+                </div>
             </div>
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <!-- JavaScript Module -->
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

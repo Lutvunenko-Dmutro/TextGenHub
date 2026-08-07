@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGPU Stress Test</title>
+    <style>
+        body { font-family: monospace; background: #121212; color: #00ff00; padding: 20px; }
+        .log { margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .error { color: #ff4444; font-weight: bold; }
+        .success { color: #00ff00; }
+        .info { color: #44aaff; }
+        button { background: #333; color: white; padding: 10px 20px; border: 1px solid #555; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
+        button:hover { background: #444; }
+        button:disabled { background: #222; color: #555; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h2>🚀 WebGPU LLM Консольний Стрес-Тест</h2>
+    <p>Відкрий інструменти розробника (F12 -> вкладка Console), щоб бачити детальні системні помилки відеокарти.</p>
+    <button id="startBtn">Почати Безкінечний Стрес-Тест</button>
+    <button id="stopBtn" disabled>Зупинити</button>
+
+    <div id="status" class="info">Готовий до запуску...</div>
+    <hr>
+    <div id="output" style="max-height: 70vh; overflow-y: auto; border: 1px solid #333; padding: 10px;"></div>
+
+    <script type="module">
+        import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const outputDiv = document.getElementById('output');
+        const statusDiv = document.getElementById('status');
+
+        let isRunning = false;
+        let engine = null;
+
+        const prompts = [
+            "Напиши детальну історію про подорож на Марс (мінімум 10 речень).",
+            "Поясни квантову фізику для 5-річної дитини.",
+            "Напиши складний вірш про програмування на JavaScript.",
+            "Які головні причини падіння Римської імперії?",
+            "Згенеруй 5 ідей для стартапу у сфері штучного інтелекту."
+        ];
+
+        function log(message, type = "info") {
+            const el = document.createElement("div");
+            el.className = `log ${type}`;
+            const time = new Date().toLocaleTimeString();
+            el.innerText = `[${time}] ${message}`;
+            outputDiv.prepend(el);
+            
+            if (type === 'error') console.error(`[${time}]`, message);
+            else console.log(`[${time}]`, message);
+        }
+
+        async function initEngine() {
+            if (!engine) {
+                statusDiv.innerText = "Завантаження моделі (це може зайняти час)...";
+                log("Ініціалізація WebLLM Engine...", "info");
+                try {
+                    engine = await CreateMLCEngine("Llama-3.2-1B-Instruct-q4f16_1-MLC", {
+                        initProgressCallback: (report) => {
+                            statusDiv.innerText = report.text;
+                        }
+                    });
+                    log("Модель успішно завантажена в пам'ять відеокарти!", "success");
+                } catch (e) {
+                    log("Помилка завантаження моделі: " + e.message, "error");
+                    throw e;
+                }
+            }
+        }
+
+        startBtn.addEventListener('click', async () => {
+            isRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            let cycle = 1;
+            let totalSuccess = 0;
+            let totalErrors = 0;
+
+            try {
+                await initEngine();
+            } catch(e) {
+                isRunning = false;
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                return;
+            }
+
+            statusDiv.innerText = "Стрес-тест запущено (Безкінечний цикл `while`)...";
+
+            // Безкінечний цикл WHILE
+            while (isRunning) {
+                log(`\n--- Початок циклу ${cycle} ---`, "info");
+                
+                for (let prompt of prompts) {
+                    if (!isRunning) break;
+
+                    log(`Запит: "${prompt}"`, "info");
+                    const startTime = performance.now();
+                    
+                    try {
+                        const reply = await engine.chat.completions.create({
+                            messages: [{ role: "user", content: prompt }],
+                            temperature: 0.7,
+                        });
+                        
+                        const endTime = performance.now();
+                        const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+                        const generatedText = reply.choices[0].message.content;
+                        
+                        log(`✅ Успіх! Час: ${timeTaken} сек. Слів: ${generatedText.split(' ').length}`, "success");
+                        log(`📄 Текст: <span style="color:#aaa; font-style:italic;">"${generatedText}"</span>`, "info");
+                        totalSuccess++;
+                    } catch (error) {
+                        log(`❌ ПОМИЛКА: ${error.message || error}`, "error");
+                        totalErrors++;
+                        // Зупинка при критичних помилках відеокарти
+                        if (error.message && error.message.toLowerCase().includes("memory")) {
+                            log("КРИТИЧНА ПОМИЛКА ПАМ'ЯТІ (OOM)! Зупиняємо тест.", "error");
+                            isRunning = false;
+                            break;
+                        }
+                    }
+
+                    // Пауза 2 секунди щоб дати відеокарті охолонути
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+                cycle++;
+            }
+
+            statusDiv.innerText = `Тест зупинено. Успішно: ${totalSuccess}, Помилок: ${totalErrors}`;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+
+        stopBtn.addEventListener('click', () => {
+            isRunning = false;
+            log("🛑 Отримано команду на зупинку. Чекаємо завершення поточного запиту...", "info");
+            statusDiv.innerText = "Зупиняємо...";
+        });
+    </script>
+</body>
+</html>
